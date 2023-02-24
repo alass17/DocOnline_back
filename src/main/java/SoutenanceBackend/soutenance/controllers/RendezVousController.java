@@ -8,10 +8,12 @@ import SoutenanceBackend.soutenance.services.RendezVousService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -137,11 +139,11 @@ public class RendezVousController {
 
 
 
-   @GetMapping("/touslespatients/{professionnelId}")
+   /*@GetMapping("/touslespatients/{professionnelId}")
     public List<Patient> getPatientsForProf(@PathVariable Long professionnelId) {
-        return rendezVousRepository.allpatientforprofessionnel(professionnelId);
+        return rendezVousRepository.findAllPatientsForProfessionnel(professionnelId);
 
-    }
+    }*/
 
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -149,10 +151,17 @@ public class RendezVousController {
 
     // Getters and setters omitted for brevity
 
-
+ //@Modifying
+    //@Transactional
     @GetMapping("troverrendezvousparid/{id}")
     public RendezVous TrouverPatientparId(@PathVariable("id") Long id){
         return rendezVousRepository.findById(id).get();
+    }
+
+
+    @GetMapping("troverpatientsparidprof/{id}")
+    public List<Object> TroverPatientsforProf(@PathVariable Long id){
+        return rendezVousRepository.findAllPatientsForProfessionnel(id);
     }
 
 }

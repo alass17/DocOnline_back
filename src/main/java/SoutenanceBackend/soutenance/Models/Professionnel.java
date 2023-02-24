@@ -41,8 +41,9 @@ public class Professionnel extends User{
     private String imageprofil;
     private String document;
 
-    private Double latitude;
     private Double longitude;
+    private Double latitude;
+
 
     @ManyToMany
     @JoinTable(name = "specialite_prof",

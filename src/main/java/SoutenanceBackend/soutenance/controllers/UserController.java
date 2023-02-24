@@ -45,7 +45,7 @@ public class UserController {
             return "Modification reussie avec succès";
         }
 
-        @PreAuthorize("hasRole('ADMIN')")
+       // @PreAuthorize("hasRole('ADMIN')")
         @DeleteMapping("/Supprimer/{id_users}")
         public String Supprimer(@PathVariable("id_users") Long id_users){
             userService.Supprimer(id_users);

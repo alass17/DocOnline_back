@@ -12,12 +12,14 @@ import SoutenanceBackend.soutenance.services.ProfesionnelService;
 import SoutenanceBackend.soutenance.services.UserDetailsImpl;
 import SoutenanceBackend.soutenance.util.EmailConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -67,9 +69,11 @@ public class ProfessionnelController {
     SpecialiteRepository specialiteRepository;
     @Autowired
     private PatientRepo patientRepo;
+    @Autowired
+    private RendezVousRepository rendezVousRepository;
 
 
-    @PostMapping("/signup/{idspec}")
+    @PostMapping("/signup/{idspec}/{lagitude}/{longitude}")
     public ResponseEntity<?> registerUser(@Param("nom") String nom,
                                           @Param("imageprofil") MultipartFile imageprofil,
                                           @Param("numero") String numero,
@@ -78,8 +82,8 @@ public class ProfessionnelController {
                                           @Param("confirmpassword") String confirmpassword,
                                           @Param("adresse") String adresse,
                                           @Param("document")MultipartFile document,
-                                          @Param("longitude")Double longitude,
-                                          @Param("lagitude")Double lagitude,
+                                          @PathVariable("longitude")Double longitude,
+                                          @PathVariable("lagitude")Double lagitude,
                                           @PathVariable("idspec") Long idspec
 
                                            ) throws IOException {
@@ -91,6 +95,7 @@ public class ProfessionnelController {
         signUpRequest.setPassword(password);
         signUpRequest.setConfirmpassword(confirmpassword);
         signUpRequest.setAdresse(adresse);
+
         signUpRequest.setLongitude(longitude);
         signUpRequest.setLagitude(lagitude);
 
@@ -290,6 +295,24 @@ public class ProfessionnelController {
         return "Professionnel supprimé avec succès!!";
 
     }
+
+
+
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    /*@Modifying
+    @Transactional
+    @GetMapping("/{id_professionnel}/tousmespatients")
+    public ResponseEntity<List<Patient>> getAllPatientsForProfessionnel(@PathVariable Long id_professionnel) {
+        Optional<Professionnel> optionalProfessionnel = professionnelRepo.findById(id_professionnel);
+        if (optionalProfessionnel.isPresent()) {
+            List<Patient> patients = rendezVousRepository.findAllPatientsForProfessionnel(id_professionnel);
+            return ResponseEntity.ok(patients);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }*/
 }
 
 

@@ -42,7 +42,8 @@ public class UserServiceImpl implements UserService{
     PasswordEncoder passwordEncoder;
     @Override
     public String Supprimer(Long id_users) {
-        return null;
+        userRepo.deleteById(id_users);
+        return "Supprimer avec succès !!";
     }
 
     @Override
