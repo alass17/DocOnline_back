@@ -28,18 +28,20 @@ import java.util.List;
 public class Professionnel extends User{
 
 
-    public Professionnel(String nom, String imageprofil , String numero, @Email String email, String password, String confirmpassword, String adresse, String document,Double latitude,Double longitude) {
+    public Professionnel(String nom, String imageprofil , String numero, @Email String email, String password, String confirmpassword, String adresse, String document,String biographie,Double latitude,Double longitude) {
         super(nom, numero, email, password, confirmpassword, adresse);
         this.document = document;
         this.imageprofil=imageprofil;
         this.latitude=latitude;
         this.longitude=longitude;
+        this.biographie=biographie;
     }
 
 
 
     private String imageprofil;
     private String document;
+    private String biographie;
 
     private Double longitude;
     private Double latitude;
@@ -60,4 +62,6 @@ public class Professionnel extends User{
 
     @ManyToMany
     List<Notification> notifications = new ArrayList<>();
+
+
 }

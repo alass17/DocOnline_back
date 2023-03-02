@@ -57,14 +57,16 @@ public class PatientController {
     @Autowired
     UserRepository userRepository;
 
-    @PostMapping("/signup")
+    @PostMapping("/signup/{longitude}/{lagitude}")
     public ResponseEntity<?> registerUser(@RequestParam("nom") String nom,
                                           @RequestParam(value = "imageprofil", required = false) MultipartFile imageprofil,
                                           @RequestParam("numero") String numero,
                                           @RequestParam("email")String email,
                                           @RequestParam("password")String password,
                                           @RequestParam("confirmpassword") String confirmpassword,
-                                          @RequestParam("adresse") String adresse) throws IOException {
+                                          @RequestParam("adresse") String adresse,
+                                          @PathVariable("longitude")Double longitude,
+                                          @PathVariable("lagitude")Double lagitude) throws IOException {
         //Professionnel professionnel = new Professionnel();
         PatientRequest patientRequest = new PatientRequest();
         patientRequest.setNom(nom);
@@ -73,6 +75,8 @@ public class PatientController {
         patientRequest.setPassword(password);
         patientRequest.setConfirmpassword(confirmpassword);
         patientRequest.setAdresse(adresse);
+        patientRequest.setLongitude(longitude);
+        patientRequest.setLagitude(lagitude);
 
         if (imageprofil != null) {
             String img1 = StringUtils.cleanPath(imageprofil.getOriginalFilename());
@@ -107,7 +111,7 @@ public class PatientController {
             Patient patient = new Patient(patientRequest.getImageprofil(),patientRequest.getNom(),patientRequest.getNumero(),
                     patientRequest.getEmail(),
                     encoder.encode(patientRequest.getPassword()), encoder.encode(patientRequest.getConfirmpassword()),
-                    patientRequest.getAdresse());
+                    patientRequest.getAdresse(),patientRequest.getLongitude(),patientRequest.getLagitude());
             Set<String> strRoles = patientRequest.getRole();
             Set<Role> roles = new HashSet<>();
 

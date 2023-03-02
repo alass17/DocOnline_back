@@ -43,6 +43,8 @@ public class ProfessionnelRequest {
 
     private String document;
 
+    private String biographie;
+
     private Double longitude;
     private Double lagitude;
 

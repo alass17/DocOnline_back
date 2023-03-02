@@ -1,6 +1,7 @@
 package SoutenanceBackend.soutenance.controllers;
 
 import SoutenanceBackend.soutenance.DtoViewModels.Request.TodayAppointmentRequest;
+import SoutenanceBackend.soutenance.DtoViewModels.Responses.ApiResponse;
 import SoutenanceBackend.soutenance.DtoViewModels.Responses.TodayAppointmentResponse;
 import SoutenanceBackend.soutenance.Models.*;
 import SoutenanceBackend.soutenance.Repository.*;
@@ -14,6 +15,7 @@ import SoutenanceBackend.soutenance.util.EmailConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -69,6 +71,7 @@ public class ProfessionnelController {
     SpecialiteRepository specialiteRepository;
     @Autowired
     private PatientRepo patientRepo;
+
     @Autowired
     private RendezVousRepository rendezVousRepository;
 
@@ -82,6 +85,7 @@ public class ProfessionnelController {
                                           @Param("confirmpassword") String confirmpassword,
                                           @Param("adresse") String adresse,
                                           @Param("document")MultipartFile document,
+                                          @Param("biographie") String biographie,
                                           @PathVariable("longitude")Double longitude,
                                           @PathVariable("lagitude")Double lagitude,
                                           @PathVariable("idspec") Long idspec
@@ -95,7 +99,7 @@ public class ProfessionnelController {
         signUpRequest.setPassword(password);
         signUpRequest.setConfirmpassword(confirmpassword);
         signUpRequest.setAdresse(adresse);
-
+        signUpRequest.setBiographie(biographie);
         signUpRequest.setLongitude(longitude);
         signUpRequest.setLagitude(lagitude);
 
@@ -133,6 +137,7 @@ public class ProfessionnelController {
                     encoder.encode(signUpRequest.getConfirmpassword()),
                     signUpRequest.getAdresse(),
                     signUpRequest.getDocument(),
+                    signUpRequest.getBiographie(),
                     signUpRequest.getLongitude(),
                     signUpRequest.getLagitude());
             Set<String> strRoles = signUpRequest.getRole();
@@ -234,20 +239,39 @@ public class ProfessionnelController {
     }
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-    @PostMapping("events/daily/{id_prof}")
-    public ResponseEntity<? extends Object> today( @Valid @RequestBody TodayAppointmentRequest todayAppointment,@PathVariable Long id_prof,BindingResult bindingResult){
+    // Display List of daily events of a doctor (Private cause it hold private patient data )
+  /*  @PostMapping("events/daily/")
+    public ResponseEntity<? extends Object> today(@CurrentUser UserDetailsImpl currentUser, @Valid @RequestBody TodayAppointmentRequest todayAppointment, BindingResult bindingResult) {
+
+        if (medecin.isEmpty()) {
+            return new ResponseEntity<>(new ApiResponse(false, "Medecin not found."), HttpStatus.NOT_FOUND);
+        }
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException("Appointment has errors; Can not update the status of the appointment;");
+        }
+        var date = LocalDate.parse(todayAppointment.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        var response = this.profesionnelService.AllMedecinAvailability(currentUser, todayAppointment);
+        if (response == null) {
+            return ResponseEntity.ok(new TodayAppointmentResponse(date, 0, null));
+        }
+        return ResponseEntity.ok(response);
+    }
+*/
+
+    @PostMapping("/events/daily")
+    public ResponseEntity<? extends Object> today(@CurrentUser UserDetailsImpl currentUser, @Valid @RequestBody TodayAppointmentRequest todayAppointment, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             throw new ValidationException("Appointment has errors; Can not update the status of the appointment;");
         }
-
-        var id_prof1=professionnelRepo.findById(id_prof).get();
         var date = LocalDate.parse(todayAppointment.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        var response = this.profesionnelService.AllMedecinAvailability(todayAppointment,id_prof1.getId());
+        var response = this.profesionnelService.AllMedecinAvailability(currentUser, todayAppointment);
         if(response==null)
             return ResponseEntity.ok(new TodayAppointmentResponse(date, 0, null));
         return ResponseEntity.ok(response);
 
     }
+
+
     // Delete an appointment
     @DeleteMapping("events/{appointmentId}")
     public ResponseEntity<?> delete(@PathVariable String appointmentId){
@@ -313,6 +337,14 @@ public class ProfessionnelController {
             return ResponseEntity.notFound().build();
         }
     }*/
+
+
+    @GetMapping("/specialite/{idspec}")
+    public  List<Professionnel> lister(@PathVariable("idspec") Specialite specialite){
+        List<Professionnel> professionnels= professionnelRepo.findBySpecialites(specialite);
+
+        return professionnels;
+    }
 }
 
 

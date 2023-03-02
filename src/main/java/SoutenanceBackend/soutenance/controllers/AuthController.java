@@ -179,6 +179,7 @@ public class AuthController {
 
   //::::::::::::::::::::::::::::::::::::::::Changer mot de passe:::::::::::::::::::::::::::::::::::::::::::::::://
 
+/*
     @PostMapping("/changePassword/{numero}")
     public ResponseEntity<String> changePassword(@RequestBody HashMap<String, String> request, @PathVariable String numero) {
         //String numeroOrEmail = request.get("numeroOrEmail");
@@ -189,28 +190,56 @@ public class AuthController {
         String currentPassword = request.get("currentpassword");
         String newPassword = request.get("newpassword");
         String confirmpassword = request.get("confirmpassword");
-        System.out.println(currentPassword+" current passworddddddddddddddd");
+
         if (!newPassword.equals(confirmpassword)) {
-            return new ResponseEntity<>("PasswordNotMatched", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Mots de passe ne correpondent pas", HttpStatus.BAD_REQUEST);
         }
         String userPassword = user.getPassword();
-        System.out.println(userPassword+" current passworddddddddddddddd encrypttttttttttttt");
+
 
         try {
             if (newPassword != null && !newPassword.isEmpty() && !StringUtils.isEmpty(newPassword)) {
-                if (bCryptPasswordEncoder.matches(currentPassword, userPassword)) {
+               if (bCryptPasswordEncoder.matches(currentPassword, userPassword)) {
                     userService.updateUserPassword(user, newPassword);
-                    System.out.println(newPassword+" newPassword passworddddddddddddddd");
-
+                } else {
+                    return new ResponseEntity<>("Mot de passe actuel incorrect", HttpStatus.BAD_REQUEST);
                 }
-            } else {
-                return new ResponseEntity<>("IncorrectCurrentPassword", HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>("Mot de passe changé avec succès!", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Error Occured: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+*/
+
+
+    @PostMapping("/changePassword/{numero}")
+    public ResponseEntity<String> changePassword(@RequestBody HashMap<String, String> request, @PathVariable String numero) {
+        User user = userRepository.findByNumero(numero);
+        if (user == null) {
+            return new ResponseEntity<>("Utilisateur non fourni!", HttpStatus.BAD_REQUEST);
+        }
+        String currentPassword = request.get("currentpassword");
+        String newPassword = request.get("newpassword");
+        String confirmpassword = request.get("confirmpassword");
+
+        if (!newPassword.equals(confirmpassword)) {
+            return new ResponseEntity<>("Mots de passe ne correspondent pas", HttpStatus.BAD_REQUEST);
+        }
+
+        String userPassword = user.getPassword();
+        if (!bCryptPasswordEncoder.matches(currentPassword, userPassword)) {
+            return new ResponseEntity<>("Mot de passe actuel incorrect", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            userService.updateUserPassword(user, newPassword);
+            return new ResponseEntity<>("Mot de passe changé avec succès!", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error Occured: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 
     //::::::::::::::::::::::::::::::Afficher tous les users::::::::::::::::::::::::::::::::::::::::::://

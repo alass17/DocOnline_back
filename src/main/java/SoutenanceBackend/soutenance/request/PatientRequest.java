@@ -38,6 +38,9 @@ public class PatientRequest {
     @Size(max = 120)
     private String adresse;
 
+    private Double longitude;
+    private Double lagitude;
+
 
     private Set<String> role;
 

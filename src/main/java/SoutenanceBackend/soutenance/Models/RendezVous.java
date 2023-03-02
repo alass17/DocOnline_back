@@ -53,7 +53,7 @@ public class RendezVous {
 
 
 
-    @ManyToOne()
+    @ManyToOne
    // @JoinColumn(name = "fuseauHoraire_id", nullable = false)
     private FuseauHoraire fuseauHoraire;
 

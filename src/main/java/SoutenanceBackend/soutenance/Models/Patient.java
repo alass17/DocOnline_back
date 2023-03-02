@@ -28,9 +28,13 @@ import java.util.Set;
 
 public class Patient extends User {
         private String imageprofil;
-    public Patient(String imageprofil,String nom,  String numero, String email,String password,  String confirmpassword,String adresse) {
+        private Double longitude;
+        private Double lagitude;
+    public Patient(String imageprofil,String nom,  String numero, String email,String password,  String confirmpassword,String adresse,Double longitude,Double lagitude) {
         super(nom, numero, email, password, confirmpassword, adresse);
         this.imageprofil=imageprofil;
+        this.longitude=longitude;
+        this.lagitude=lagitude;
     }
 
     public Patient( String nom, String email) {

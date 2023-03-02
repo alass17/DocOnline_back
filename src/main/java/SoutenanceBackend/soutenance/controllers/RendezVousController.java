@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(value = {"http://localhost:8100","http://localhost:4200"},maxAge = 3600,allowCredentials = "true")
@@ -126,8 +127,8 @@ public class RendezVousController {
     }
 
 
-
-    @GetMapping("/patients/{professionnelId}")
+//:::::::::::::::::::::::code avec doublon:::::::::::::::::::::::::::::::::::::::::
+   /* @GetMapping("/patients/{professionnelId}")
     public List<Patient> getPatientsForProfessional(@PathVariable Long professionnelId) {
         List<RendezVous> appointments = rendezVousRepository.findByProfessionnelId(professionnelId);
         List<Patient> patients = new ArrayList<>();
@@ -135,9 +136,23 @@ public class RendezVousController {
             patients.add(appointment.getPatient());
         }
         return patients;
+    }*/
+
+//::::::::::::::::::::::::::::::::::::::Sans doublon:::::::::::::::::::::::::::::::::::::
+
+
+    @GetMapping("/patients/{professionnelId}")
+
+    public List<Patient> getPatientsForProfessional(@PathVariable Long professionnelId) {
+        List<RendezVous> appointments = rendezVousRepository.findByProfessionnelId(professionnelId);
+        List<Patient> patients = new ArrayList<>();
+        for (RendezVous appointment : appointments) {
+            patients.add(appointment.getPatient());
+        }
+        return patients.stream().distinct().collect(Collectors.toList());
     }
 
-
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
    /*@GetMapping("/touslespatients/{professionnelId}")
     public List<Patient> getPatientsForProf(@PathVariable Long professionnelId) {

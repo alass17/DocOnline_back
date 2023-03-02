@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.nio.file.attribute.UserPrincipal;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,11 +27,15 @@ import java.util.List;
 public class ProfessionnelServiceImpl implements ProfesionnelService{
 
     private FuseauHoraireRepo fuseauHoraireRepo;
-    private RendezVousRepository rendezVousRepository;
-    private RendezVousMapper rendezVousMapper;
-    private PatientRepo patientRepository;
-    private TweakResponse tweakResponse;
-    public void ProfessionenelService(ProfessionnelRepo professionnelRepo, PatientRepo patientRepository, FuseauHoraireRepo fuseauHoraireRepo, RendezVousRepository rendezVousRepository, RendezVousMapper rendezVousMapper, TweakResponse tweakResponse) {
+    @Autowired
+    RendezVousRepository rendezVousRepository;
+    @Autowired
+    RendezVousMapper rendezVousMapper;
+    @Autowired
+    PatientRepo patientRepository;
+    @Autowired
+    TweakResponse tweakResponse;
+ /*   public void ProfessionenelService(ProfessionnelRepo professionnelRepo, PatientRepo patientRepository, FuseauHoraireRepo fuseauHoraireRepo, RendezVousRepository rendezVousRepository, RendezVousMapper rendezVousMapper, TweakResponse tweakResponse) {
         this.professionnelRepo = professionnelRepo;
         this.patientRepository = patientRepository;
         this.fuseauHoraireRepo = fuseauHoraireRepo;
@@ -38,7 +43,7 @@ public class ProfessionnelServiceImpl implements ProfesionnelService{
 
         this.rendezVousMapper = rendezVousMapper;
         this.tweakResponse = tweakResponse;
-    }
+    }*/
     @Autowired
     ProfessionnelRepo professionnelRepo;
     @Override
@@ -62,19 +67,15 @@ public class ProfessionnelServiceImpl implements ProfesionnelService{
             }).orElseThrow(() -> new RuntimeException("Professionnel non trovée!!"));
     }
 
-    @Override
-    public Object AllMedecinAvailability(TodayAppointmentRequest todayAppointment, Long id_prof) {
-        return null;
-    }
 
-    public Object AllMedecinAvailability(User currentUser, @RequestBody TodayAppointmentRequest todayAppointment){
-        var medecin = this.professionnelRepo.findById(currentUser.getId());
+    public Object AllMedecinAvailability(UserDetailsImpl currentUser,@RequestBody TodayAppointmentRequest todayAppointment){
+        var medecin=this.professionnelRepo.findById(todayAppointment.getMedecinId());
         var date = LocalDate.parse(todayAppointment.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         if(medecin.isEmpty()){
             return new ResponseEntity<>(new ApiResponse(false,"Medecin not found."),
                     HttpStatus.NOT_FOUND);
         }
-        var isAvailable = this.rendezVousRepository.findAllByProfessionnelAndDate(medecin.get(), date);
+        var isAvailable =this.rendezVousRepository.findAllByProfessionnelAndDate(medecin.get(), date);
         if(isAvailable.isEmpty()){
 //            return new ResponseEntity<>(new ApiResponse(false,"No event for today."),
 //                    HttpStatus.NOT_FOUND);
@@ -84,6 +85,10 @@ public class ProfessionnelServiceImpl implements ProfesionnelService{
         var response = this.rendezVousMapper.toDto(isAvailable, isAvailable.get(0), size);
         return response;
     }
+
+
+
+
     // Delete Event.
     @Override
     public Object deleteEvent(String rendezVousId) {
@@ -118,6 +123,7 @@ public class ProfessionnelServiceImpl implements ProfesionnelService{
         return new ResponseEntity<>(new ApiResponse(true,"Event modifier avec success"),
                 HttpStatus.OK);
     }
+
 
 
 }
