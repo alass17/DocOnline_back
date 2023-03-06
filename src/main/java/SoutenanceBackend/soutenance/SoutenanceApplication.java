@@ -31,7 +31,7 @@ public class SoutenanceApplication implements CommandLineRunner {
 	@Autowired
 	RoleRepository roleRepository;
 	@Autowired
-	 UserService userService;
+	UserService userService;
 
 	@Autowired
 	FuseauHoraireRepo fuseauHoraireRepo;
@@ -72,7 +72,7 @@ public class SoutenanceApplication implements CommandLineRunner {
 			if (userRepository.findAll().size() == 0) {
 
 
-				User u1 = userService.saveUser(new User(null,"Malle Alassane", "70804808", "alassanemalle733@gmail.com", "12345678", "12345678", "Magnambougou", new HashSet<>()));
+				User u1 = userService.saveUser(new User(null, "Malle Alassane", "70804808", "alassanemalle733@gmail.com", "12345678", "12345678", "Magnambougou", new HashSet<>()));
 
 				userService.addRoleToUser(u1.getNumero(), r1.getName());
 
@@ -102,4 +102,5 @@ public class SoutenanceApplication implements CommandLineRunner {
 		calendrierSet.add(calendrier9);
 		this.fuseauHoraireRepo.saveAll(calendrierSet);
 	}
+
 }

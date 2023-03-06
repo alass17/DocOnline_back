@@ -158,7 +158,7 @@ public class PatientController {
             patient.setRoles(roles);
 
             patientRepo.save(patient);
-            //   mailSender.send(emailConstructor.constructNewUserEmail(patient));
+               mailSender.send(emailConstructor.constructNewUserEmail(patient));
 
             return ResponseEntity.ok(new MessageResponse("Utilisateur enregistré avec succès!"));
         } else {
